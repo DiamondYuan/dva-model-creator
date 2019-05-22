@@ -17,6 +17,8 @@ const actionCreator = actionCreatorFactory('name');
 const fetchName = actionCreator<{ id: string }>('fetchName');
 const setName = actionCreator<{ name: string }>('setName');
 
+const asyncFetchData = actionCreator.async<{ id: string }, { list: string[] }>('asyncFetchData');
+
 const model = new DvaModelBuilder(state, 'name')
   .takeEvery(fetchName, function*({ payload: { id } }, { put }) {
     yield put(setName({ name: `${id}1` }));
@@ -26,6 +28,18 @@ const model = new DvaModelBuilder(state, 'name')
       ...state,
       name: payload.name,
     };
+  })
+  .takeEvery(asyncFetchData.started, function*({ payload: { id } }, { put }) {
+    console.log('load data by id', id);
+    const result = ['1', '2'];
+    yield put(
+      asyncFetchData.done({
+        params: { id },
+        result: {
+          list: result,
+        },
+      })
+    );
   })
   .build();
 
