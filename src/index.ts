@@ -1,6 +1,8 @@
 import { call, put, select, take, cancel } from 'redux-saga/effects';
 import { Action, ActionCreator } from './actionCreatorFactory';
 
+export * from './actionCreatorFactory';
+
 export type Handler<InS extends OutS, OutS, P> = (state: InS, payload: P) => OutS;
 
 interface Model<T> {

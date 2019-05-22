@@ -1,13 +1,14 @@
 {
   "name": "dva-model-creator",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "repository": "git@github.com:DiamondYuan/dva-model-creator.git",
   "author": "DiamondYuan <admin@diamondyuan.com>",
   "license": "MIT",
   "scripts": {
     "cov": "egg-bin cov",
-    "lint": "eslint --ext .js,.ts ."
+    "lint": "eslint --ext .js,.ts .",
+    "build": "tsc"
   },
   "devDependencies": {
     "@diamondyuan/eslint-config-typescript": "^6.0.0",
