@@ -19,7 +19,9 @@ export interface EffectsCommandMap {
   cancel: typeof cancel;
 }
 
-export type EffectsHandler<P> = (action: Action<P>, effects: EffectsCommandMap) => void;
+export type EffectsHandler<P> = (payload: P, effects: EffectsCommandMap) => void;
+
+export type EffectsHandlerWithAction<P> = (payload: Action<P>, effects: EffectsCommandMap) => void;
 
 export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   private model: Model<OutS>;
@@ -45,22 +47,60 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   };
 
   takeEvery = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
-    this.model.effects[actionCreator.originType] = handler;
-    return this;
+    return this.setEffects(actionCreator, ({ payload }, effects) => handler(payload, effects));
+  };
+
+  takeEveryWithAction = <P>(
+    actionCreator: ActionCreator<P>,
+    handler: EffectsHandlerWithAction<P>
+  ) => {
+    return this.setEffects(actionCreator, handler);
   };
 
   takeLatest = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
-    this.model.effects[actionCreator.originType] = [handler, { type: 'takeLatest' }];
-    return this;
+    return this.setEffects(actionCreator, [
+      ({ payload }, effects) => handler(payload, effects),
+      { type: 'takeLatest' },
+    ]);
+  };
+
+  takeLatestWithAction = <P>(
+    actionCreator: ActionCreator<P>,
+    handler: EffectsHandlerWithAction<P>
+  ) => {
+    return this.setEffects(actionCreator, [handler, { type: 'takeLatest' }]);
   };
 
   throttle = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>, ms?: number) => {
-    this.model.effects[actionCreator.originType] = [handler, { type: 'throttle', ms }];
-    return this;
+    return this.setEffects(actionCreator, [
+      ({ payload }, effects) => handler(payload, effects),
+      { type: 'throttle', ms },
+    ]);
+  };
+
+  throttleWithAction = <P>(
+    actionCreator: ActionCreator<P>,
+    handler: EffectsHandlerWithAction<P>
+  ) => {
+    return this.setEffects(actionCreator, [handler, { type: 'takeLatest' }]);
   };
 
   watcher = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
-    this.model.effects[actionCreator.originType] = [handler, { type: 'watcher' }];
+    return this.setEffects(actionCreator, [
+      ({ payload }, effects) => handler(payload, effects),
+      { type: 'watcher' },
+    ]);
+  };
+
+  watcherWithAction = <P>(
+    actionCreator: ActionCreator<P>,
+    handler: EffectsHandlerWithAction<P>
+  ) => {
+    return this.setEffects(actionCreator, [handler, { type: 'watcher' }]);
+  };
+
+  private setEffects = <P>(actionCreator: ActionCreator<P>, data: any) => {
+    this.model.effects[actionCreator.originType] = data;
     return this;
   };
 
