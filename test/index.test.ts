@@ -34,6 +34,38 @@ describe('test DvaModelBuilder', () => {
     equal(model.namespace, namespace);
   });
 
+  describe('test case and caseWithAction', () => {
+    const namespace = getRandomString();
+    const actionCreator = actionCreatorFactory(namespace);
+    const add = actionCreator<number>('add');
+    const model = new DvaModelBuilder(0, namespace)
+      .case(add, (state, payload) => {
+        return state + payload;
+      })
+      .caseWithAction(actionCreator<number>('minus'), (state, { payload }) => {
+        return state - payload;
+      })
+      .build();
+
+    it('should get correct state', () => {
+      const app = create();
+      app.model(model);
+      app.start();
+      (app as any)._store.dispatch(add(100));
+      equal(app._store.getState()[namespace], 100);
+      (app as any)._store.dispatch({
+        type: `${namespace}/minus`,
+        payload: 1,
+      });
+      equal(app._store.getState()[namespace], 99);
+      (app as any)._store.dispatch({
+        type: `${namespace}/add`,
+        payload: 30,
+      });
+      equal(app._store.getState()[namespace], 129);
+    });
+  });
+
   describe('test takeEvery and takeEveryWithAction', () => {
     const namespace = getRandomString();
     const actionCreator = actionCreatorFactory(namespace);
@@ -177,7 +209,7 @@ describe('test DvaModelBuilder', () => {
       })
       .build();
 
-    it('handler args should correct ', async () => {
+    it('should get correct state', async () => {
       const app = create();
       app.model(model);
       app.start();
