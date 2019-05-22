@@ -25,6 +25,8 @@ export type EffectsHandler<P> = (payload: P, effects: EffectsCommandMap) => void
 
 export type EffectsHandlerWithAction<P> = (payload: Action<P>, effects: EffectsCommandMap) => void;
 
+export type EffectsWatcher = (effects: EffectsCommandMap) => void;
+
 export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   private model: Model<OutS>;
 
@@ -88,17 +90,7 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
     return this.setEffects(actionCreator, [handler, { type: 'throttle', ms }]);
   };
 
-  watcher = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
-    return this.setEffects(actionCreator, [
-      ({ payload }, effects) => handler(payload, effects),
-      { type: 'watcher' },
-    ]);
-  };
-
-  watcherWithAction = <P>(
-    actionCreator: ActionCreator<P>,
-    handler: EffectsHandlerWithAction<P>
-  ) => {
+  watcher = <P>(actionCreator: ActionCreator<P>, handler: EffectsWatcher) => {
     return this.setEffects(actionCreator, [handler, { type: 'watcher' }]);
   };
 
