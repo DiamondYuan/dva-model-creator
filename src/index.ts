@@ -80,9 +80,10 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
 
   throttleWithAction = <P>(
     actionCreator: ActionCreator<P>,
-    handler: EffectsHandlerWithAction<P>
+    handler: EffectsHandlerWithAction<P>,
+    ms?: number
   ) => {
-    return this.setEffects(actionCreator, [handler, { type: 'takeLatest' }]);
+    return this.setEffects(actionCreator, [handler, { type: 'throttle', ms }]);
   };
 
   watcher = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {

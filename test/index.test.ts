@@ -35,11 +35,12 @@ describe('test DvaModelBuilder', () => {
   });
 
   it('test takeLatest and takeEveryWithAction', () => {
-    const actionCreator = actionCreatorFactory('takeLatestTest');
+    const namespace = getRandomString();
+    const actionCreator = actionCreatorFactory(namespace);
     const action1 = actionCreator<string>('action1');
     const action2 = actionCreator<string>('action2');
     let callback = sinon.fake();
-    const model = new DvaModelBuilder(state, 'takeLatestTest')
+    const model = new DvaModelBuilder(state, namespace)
       .takeLatest(action1, payload => {
         callback(payload);
       })
@@ -65,15 +66,16 @@ describe('test DvaModelBuilder', () => {
     data = getRandomString();
     dispatchOnce(model, action2(data));
     equal(callback.callCount, 2);
-    deepEqual(callback.getCall(1).args[0], { type: 'takeLatestTest/action2', payload: data });
+    deepEqual(callback.getCall(1).args[0], { type: `${namespace}/action2`, payload: data });
   });
 
   describe('test takeEvery and takeEveryWithAction', () => {
-    const actionCreator = actionCreatorFactory('takeEveryAction');
+    const namespace = getRandomString();
+    const actionCreator = actionCreatorFactory(namespace);
     const action1 = actionCreator<string>('action1');
     const action2 = actionCreator<string>('action2');
     let callback = sinon.fake();
-    const model = new DvaModelBuilder(state, 'takeEveryAction')
+    const model = new DvaModelBuilder(state, namespace)
       .takeEvery(action1, payload => {
         callback(payload);
       })
@@ -101,7 +103,7 @@ describe('test DvaModelBuilder', () => {
       dispatchOnce(model, action2(data));
       equal(callback.callCount, 2);
       const { type, payload } = callback.getCall(1).args[0];
-      deepEqual({ type, payload }, { type: 'takeEveryAction/action2', payload: data });
+      deepEqual({ type, payload }, { type: `${namespace}/action2`, payload: data });
     });
   });
 });
