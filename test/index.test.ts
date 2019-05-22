@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import { DvaModelBuilder, actionCreatorFactory } from './../src/index';
 import { equal, deepEqual } from 'assert';
 import * as sinon from 'sinon';

@@ -1,0 +1,16 @@
+{
+  "prettier.eslintIntegration": true,
+  "editor.detectIndentation": false,
+  "eslint.autoFixOnSave": true,
+  "eslint.trace.server": "messages",
+  "eslint.packageManager": "yarn",
+  "eslint.validate": [
+    "javascript",
+    {
+      "language": "typescript",
+      "autoFix": true
+    }
+  ],
+  "editor.tabSize": 2,
+  "files.insertFinalNewline": true
+}

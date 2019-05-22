@@ -1,3 +1,4 @@
+/* eslint-disable no-undefined */
 import actionCreatorFactory, { isType } from '../src/actionCreatorFactory';
 import * as assert from 'assert';
 

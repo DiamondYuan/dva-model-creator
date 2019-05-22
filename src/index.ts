@@ -94,12 +94,12 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
     return this.setEffects(actionCreator, [handler, { type: 'watcher' }]);
   };
 
+  build = () => {
+    return this.model;
+  };
+
   private setEffects = <P>(actionCreator: ActionCreator<P>, data: any) => {
     this.model.effects[actionCreator.originType] = data;
     return this;
-  };
-
-  build = () => {
-    return this.model;
   };
 }
