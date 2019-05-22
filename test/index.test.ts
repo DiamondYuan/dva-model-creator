@@ -49,6 +49,8 @@ const model = new DvaModelBuilder(state, 'name')
   })
   .build();
 
+console.log(model);
+
 describe('test DvaModelBuilder', () => {
   it('should get correct namespace', () => {
     equal(model.namespace, 'name');

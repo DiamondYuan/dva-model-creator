@@ -34,12 +34,33 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   }
 
   case = <P>(actionCreator: ActionCreator<P>, handler: Handler<InS, OutS, P>) => {
+    this.model.reducers[actionCreator.originType] = (state, action) =>
+      handler(state, action.payload);
+    return this;
+  };
+
+  caseWithAction = <P>(actionCreator: ActionCreator<P>, handler: Handler<InS, OutS, Action<P>>) => {
     this.model.reducers[actionCreator.originType] = handler;
     return this;
   };
 
   takeEvery = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
     this.model.effects[actionCreator.originType] = handler;
+    return this;
+  };
+
+  takeLatest = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
+    this.model.effects[actionCreator.originType] = [handler, { type: 'takeLatest' }];
+    return this;
+  };
+
+  throttle = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>, ms?: number) => {
+    this.model.effects[actionCreator.originType] = [handler, { type: 'throttle', ms }];
+    return this;
+  };
+
+  watcher = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
+    this.model.effects[actionCreator.originType] = [handler, { type: 'watcher' }];
     return this;
   };
 
