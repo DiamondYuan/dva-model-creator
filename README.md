@@ -12,7 +12,13 @@ write type string dva model
 
 ### how to use
 
+```bash
+yarn add dva-model-creator
 ```
+
+```typescript
+import { DvaModelBuilder, actionCreatorFactory } from 'dva-model-creator';
+
 const actionCreator = actionCreatorFactory('namespace');
 const add = actionCreator<number>('add');
 const minus = actionCreator<number>('minus');

@@ -1,5 +1,4 @@
-import { DvaModelBuilder } from './../src/index';
-import actionCreatorFactory from '../src/actionCreatorFactory';
+import { DvaModelBuilder, actionCreatorFactory } from './../src/index';
 import { equal, deepEqual } from 'assert';
 import * as sinon from 'sinon';
 import { create } from 'dva-core';
