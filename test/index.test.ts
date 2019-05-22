@@ -14,18 +14,18 @@ const state: InitState = {
 
 const actionCreator = actionCreatorFactory('name');
 
+const fetchName = actionCreator<{ id: string }>('fetchName');
+const setName = actionCreator<{ name: string }>('setName');
+
 const model = new DvaModelBuilder(state, 'name')
-  .case(actionCreator<{ name: string }>('load_name'), (state, payload) => {
+  .takeEvery(fetchName, function*({ payload: { id } }, { put }) {
+    yield put(setName({ name: `${id}1` }));
+  })
+  .case(setName, (state, payload) => {
     return {
       ...state,
       name: payload.name,
     };
-  })
-  .takeEvery(actionCreator<{ url: string }>('fetchData'), function*({ payload: { url } }, { put }) {
-    console.log(url);
-    yield put({
-      type: '!',
-    });
   })
   .build();
 
