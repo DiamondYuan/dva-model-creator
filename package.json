@@ -7,7 +7,8 @@
   "scripts": {
     "cov": "egg-bin cov",
     "lint": "eslint --ext .js,.ts .",
-    "build": "tsc"
+    "build": "tsc",
+    "prepublish": "npm run build"
   },
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
