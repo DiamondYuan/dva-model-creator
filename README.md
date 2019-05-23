@@ -1,5 +1,8 @@
 <h1 align="center">Dva Model Creator</h1>
 <p align="center">
+    <a href="https://npmjs.org/package/dva-model-creator">
+      <img src="https://img.shields.io/npm/v/dva-model-creator.svg?style=flat-square" alt="NPM version">
+    </a>
     <a href="https://travis-ci.com/DiamondYuan/dva-model-creator">
       <img src="https://img.shields.io/travis/DiamondYuan/dva-model-creator/master.svg?style=flat-square" alt="Build Status">
     </a>
