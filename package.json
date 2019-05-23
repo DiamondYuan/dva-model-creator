@@ -10,6 +10,10 @@
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc"
   },
+  "typings": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "devDependencies": {
     "@diamondyuan/eslint-config-typescript": "^6.0.0",
     "@types/mocha": "^5.2.6",
