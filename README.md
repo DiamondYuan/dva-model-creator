@@ -1,6 +1,6 @@
 <h1 align="center">Dva Model Creator</h1>
 <p align="center">
-    <a href="https://travis-ci.org/DiamondYuan/dva-model-creator">
+    <a href="https://travis-ci.com/DiamondYuan/dva-model-creator">
       <img src="https://img.shields.io/travis/DiamondYuan/dva-model-creator/master.svg?style=flat-square" alt="Build Status">
     </a>
     <a href="https://codecov.io/gh/DiamondYuan/dva-model-creator">
@@ -8,7 +8,9 @@
     </a>
 </p>
 
-write type string dva model
+> Inspired by [`aikoven/typescript-fsa`](https://github.com/aikoven/typescript-fsa) and [`dphilipson/typescript-fsa-reducers`](https://github.com/dphilipson/typescript-fsa-reducers)
+
+write type strong dva model
 
 ### how to use
 
