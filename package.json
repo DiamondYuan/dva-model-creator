@@ -1,7 +1,6 @@
 {
   "name": "dva-model-creator",
   "version": "0.0.3",
-  "main": "index.js",
   "repository": "git@github.com:DiamondYuan/dva-model-creator.git",
   "author": "DiamondYuan <admin@diamondyuan.com>",
   "license": "MIT",
@@ -10,6 +9,7 @@
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc"
   },
+  "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
     "lib"
