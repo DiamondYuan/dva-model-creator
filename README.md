@@ -15,7 +15,7 @@
 
 Write type strong dva model
 
-配合 Umi Pro 食用更佳 [`umijs/vscode-extension-umi-pro`][https://github.com/umijs/vscode-extension-umi-pro]。
+配合 Umi Pro 食用更佳 [`umijs/vscode-extension-umi-pro`](https://github.com/umijs/vscode-extension-umi-pro)。
 
 ### how to use
 
