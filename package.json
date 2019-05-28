@@ -1,6 +1,6 @@
 {
   "name": "dva-model-creator",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "repository": "git@github.com:DiamondYuan/dva-model-creator.git",
   "author": "DiamondYuan <admin@diamondyuan.com>",
   "license": "MIT",
@@ -20,6 +20,7 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^12.0.2",
     "@types/sinon": "^7.0.11",
+    "@types/warning": "^3.0.0",
     "@typescript-eslint/eslint-plugin": "^1.9.0",
     "@typescript-eslint/parser": "^1.9.0",
     "babel-eslint": "^10.0.1",
@@ -31,8 +32,7 @@
     "prettier": "^1.17.1",
     "redux-saga": "^1.0.2",
     "sinon": "^7.3.2",
-    "typescript": "^3.4.5",
-    "@types/warning": "^3.0.0"
+    "typescript": "^3.4.5"
   },
   "egg": {
     "typescript": true
