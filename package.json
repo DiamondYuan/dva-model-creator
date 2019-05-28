@@ -31,9 +31,13 @@
     "prettier": "^1.17.1",
     "redux-saga": "^1.0.2",
     "sinon": "^7.3.2",
-    "typescript": "^3.4.5"
+    "typescript": "^3.4.5",
+    "@types/warning": "^3.0.0"
   },
   "egg": {
     "typescript": true
+  },
+  "dependencies": {
+    "warning": "^4.0.3"
   }
 }

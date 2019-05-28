@@ -219,4 +219,71 @@ describe('test DvaModelBuilder', () => {
       equal(app._store.getState()[namespace], 2);
     });
   });
+
+  describe('test warn', () => {
+    const namespace = 'test';
+    it('should warn if use error action creator ', () => {
+      let mockFn = (console.error = sinon.fake());
+      const errorActionCreator = actionCreatorFactory('error');
+      const model = new DvaModelBuilder(0, namespace);
+      model.case(errorActionCreator('case'), state => state);
+      deepEqual(mockFn.getCall(0).args, [
+        `Warning: action "error/case" can't be effects or reducers in model "test"`,
+      ]);
+      model.caseWithAction(errorActionCreator('caseWithAction'), state => state);
+      deepEqual(mockFn.getCall(1).args, [
+        `Warning: action "error/caseWithAction" can't be effects or reducers in model "test"`,
+      ]);
+      let effects = [
+        'takeEvery',
+        'takeEveryWithAction',
+        'takeLatest',
+        'takeLatestWithAction',
+        'throttle',
+        'throttleWithAction',
+        'watcher',
+      ];
+      for (let i = 0; i < effects.length; i++) {
+        const effect = effects[i];
+        model[effect](errorActionCreator(effect), function*() {
+          yield console.log();
+        });
+        deepEqual(mockFn.getCall(i + 2).args, [
+          `Warning: action "error/${effect}" can't be effects or reducers in model "test"`,
+        ]);
+      }
+    });
+
+    it('should warn if use noNamespaceActionCreator', () => {
+      let mockFn = (console.error = sinon.fake());
+      const noNamespaceActionCreator = actionCreatorFactory();
+      const model = new DvaModelBuilder(0, namespace);
+      model.case(noNamespaceActionCreator('case'), state => state);
+      deepEqual(mockFn.getCall(0).args, [
+        `Warning: action case in model "test" should have namespace`,
+      ]);
+      model.caseWithAction(noNamespaceActionCreator('caseWithAction'), state => state);
+      deepEqual(mockFn.getCall(1).args, [
+        `Warning: action caseWithAction in model "test" should have namespace`,
+      ]);
+      let effects = [
+        'takeEvery',
+        'takeEveryWithAction',
+        'takeLatest',
+        'takeLatestWithAction',
+        'throttle',
+        'throttleWithAction',
+        'watcher',
+      ];
+      for (let i = 0; i < effects.length; i++) {
+        const effect = effects[i];
+        model[effect](noNamespaceActionCreator(effect), function*() {
+          yield console.log();
+        });
+        deepEqual(mockFn.getCall(i + 2).args, [
+          `Warning: action ${effect} in model "test" should have namespace`,
+        ]);
+      }
+    });
+  });
 });

@@ -1,5 +1,6 @@
 import { call, put, select, take, cancel } from 'redux-saga/effects';
 import { Action, ActionCreator } from './actionCreatorFactory';
+import * as warning from 'warning';
 
 export * from './actionCreatorFactory';
 
@@ -40,12 +41,14 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   }
 
   case = <P>(actionCreator: ActionCreator<P>, handler: Handler<InS, OutS, P>) => {
+    this.checkType(actionCreator.type);
     this.model.reducers[actionCreator.originType] = (state, action) =>
       handler(state, action.payload);
     return this;
   };
 
   caseWithAction = <P>(actionCreator: ActionCreator<P>, handler: Handler<InS, OutS, Action<P>>) => {
+    this.checkType(actionCreator.type);
     this.model.reducers[actionCreator.originType] = handler;
     return this;
   };
@@ -99,7 +102,22 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   };
 
   private setEffects = <P>(actionCreator: ActionCreator<P>, data: any) => {
+    this.checkType(actionCreator.type);
     this.model.effects[actionCreator.originType] = data;
     return this;
   };
+
+  private checkType(type: string) {
+    const { namespace } = this.model;
+    if (namespace) {
+      const action = type.split('/');
+      warning(action.length === 2, `action ${type} in model "${namespace}" should have namespace`);
+      if (action.length === 2) {
+        warning(
+          action[0] === namespace,
+          `action "${type}" can't be effects or reducers in model "${namespace}"`
+        );
+      }
+    }
+  }
 }
