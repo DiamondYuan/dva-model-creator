@@ -22,11 +22,14 @@ export interface EffectsCommandMap {
   cancel: typeof cancel;
 }
 
-export type EffectsHandler<P> = (payload: P, effects: EffectsCommandMap) => void;
+export type EffectsHandler<P> = (payload: P, effects: EffectsCommandMap) => IterableIterator<any>;
 
-export type EffectsHandlerWithAction<P> = (payload: Action<P>, effects: EffectsCommandMap) => void;
+export type EffectsHandlerWithAction<P> = (
+  payload: Action<P>,
+  effects: EffectsCommandMap
+) => IterableIterator<any>;
 
-export type EffectsWatcher = (effects: EffectsCommandMap) => void;
+export type EffectsWatcher = (effects: EffectsCommandMap) => IterableIterator<any>;
 
 export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   private model: Model<OutS>;

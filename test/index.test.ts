@@ -73,11 +73,11 @@ describe('test DvaModelBuilder', () => {
     const action2 = actionCreator<string>('action2');
     let callback = sinon.fake();
     const model = new DvaModelBuilder(state, namespace)
-      .takeEvery(action1, payload => {
-        callback(payload);
+      .takeEvery(action1, function*(payload) {
+        yield callback(payload);
       })
-      .takeEveryWithAction(action2, ({ type, payload }) => {
-        callback({
+      .takeEveryWithAction(action2, function*({ type, payload }) {
+        yield callback({
           type,
           payload,
         });
@@ -111,11 +111,11 @@ describe('test DvaModelBuilder', () => {
     const action2 = actionCreator<string>('action2');
     let callback = sinon.fake();
     const model = new DvaModelBuilder(state, namespace)
-      .takeLatest(action1, payload => {
-        callback(payload);
+      .takeLatest(action1, function*(payload) {
+        yield callback(payload);
       })
-      .takeLatestWithAction(action2, ({ type, payload }) => {
-        callback({
+      .takeLatestWithAction(action2, function*({ type, payload }) {
+        yield callback({
           type,
           payload,
         });
@@ -152,15 +152,15 @@ describe('test DvaModelBuilder', () => {
     const model = new DvaModelBuilder(state, namespace)
       .throttle(
         action1,
-        payload => {
-          callback(payload);
+        function*(payload) {
+          yield callback(payload);
         },
         10
       )
       .throttleWithAction(
         action2,
-        ({ type, payload }) => {
-          callback({
+        function*({ type, payload }) {
+          yield callback({
             type,
             payload,
           });
@@ -275,6 +275,7 @@ describe('test DvaModelBuilder', () => {
         'throttleWithAction',
         'watcher',
       ];
+
       for (let i = 0; i < effects.length; i++) {
         const effect = effects[i];
         model[effect](noNamespaceActionCreator(effect), function*() {
