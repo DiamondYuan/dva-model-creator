@@ -57,7 +57,9 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   };
 
   takeEvery = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
-    return this.setEffects(actionCreator, ({ payload }, effects) => handler(payload, effects));
+    return this.setEffects(actionCreator, function*({ payload }, effects) {
+      yield handler(payload, effects);
+    });
   };
 
   takeEveryWithAction = <P>(
@@ -69,7 +71,9 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
 
   takeLatest = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
     return this.setEffects(actionCreator, [
-      ({ payload }, effects) => handler(payload, effects),
+      function*({ payload }, effects) {
+        yield handler(payload, effects);
+      },
       { type: 'takeLatest' },
     ]);
   };
@@ -83,7 +87,9 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
 
   throttle = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>, ms?: number) => {
     return this.setEffects(actionCreator, [
-      ({ payload }, effects) => handler(payload, effects),
+      function*({ payload }, effects) {
+        yield handler(payload, effects);
+      },
       { type: 'throttle', ms },
     ]);
   };

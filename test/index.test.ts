@@ -104,7 +104,7 @@ describe('test DvaModelBuilder', () => {
     });
   });
 
-  describe('test takeLatest and takeEveryWithAction', () => {
+  describe('test takeLatest and takeLatestWithAction', () => {
     const namespace = getRandomString();
     const actionCreator = actionCreatorFactory(namespace);
     const action1 = actionCreator<string>('action1');
