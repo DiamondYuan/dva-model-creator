@@ -123,8 +123,8 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   subscript = (func: Subscription) => {
     let funcName = func.name;
 
-    warning(!funcName, `some subscriptions in model ${this.model.namespace} don't have name`);
-    warning(this.model.subscriptions[funcName], `duplicate  subscript function name ${funcName}`);
+    warning(!!funcName, `some subscriptions in model ${this.model.namespace} don't have name`);
+    warning(!this.model.subscriptions[funcName], `duplicate  subscript function name ${funcName}`);
 
     this.model.subscriptions[funcName] = func;
     return this;
