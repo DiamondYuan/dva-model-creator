@@ -29,7 +29,9 @@
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-prettier": "^3.1.0",
+    "history": "^4.9.0",
     "prettier": "^1.17.1",
+    "redux": "^4.0.1",
     "redux-saga": "^1.0.2",
     "sinon": "^7.3.2",
     "typescript": "^3.4.5"

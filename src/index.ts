@@ -1,8 +1,21 @@
 import { call, put, select, take, cancel } from 'redux-saga/effects';
 import { Action, ActionCreator } from './actionCreatorFactory';
 import * as warning from 'warning';
+import { History } from 'history';
+import { Dispatch } from 'redux';
 
 export * from './actionCreatorFactory';
+
+export interface SubscriptionAPI {
+  history: History;
+  dispatch: Dispatch<any>;
+}
+
+export type Subscription = (api: SubscriptionAPI, done: Function) => void;
+
+export interface SubscriptionsMapObject {
+  [key: string]: Subscription;
+}
 
 export type Handler<InS extends OutS, OutS, P> = (state: InS, payload: P) => OutS;
 
@@ -40,6 +53,7 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
       namespace,
       effects: {},
       reducers: {},
+      subscriptions: {},
     };
   }
 
@@ -104,6 +118,16 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
 
   watcher = <P>(actionCreator: ActionCreator<P>, handler: EffectsWatcher) => {
     return this.setEffects(actionCreator, [handler, { type: 'watcher' }]);
+  };
+
+  subscript = (func: Subscription) => {
+    let funcName = func.name;
+
+    warning(!funcName, `some subscriptions in model ${this.model.namespace} don't have name`);
+    warning(this.model.subscriptions[funcName], `duplicate  subscript function name ${funcName}`);
+
+    this.model.subscriptions[funcName] = func;
+    return this;
   };
 
   build = () => {

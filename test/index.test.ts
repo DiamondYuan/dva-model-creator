@@ -286,5 +286,25 @@ describe('test DvaModelBuilder', () => {
         ]);
       }
     });
+
+    it('test subscript', () => {
+      let mockFn = (console.error = sinon.fake());
+      const namespace = getRandomString();
+      const model = new DvaModelBuilder(0, namespace);
+      model
+        .subscript(function test() {
+          console.log(123);
+        })
+        .subscript(function test() {
+          console.log(123);
+        })
+        .subscript(() => {
+          console.log(123);
+        });
+      deepEqual(mockFn.getCall(0).args, [
+        `Warning: some subscriptions in model ${namespace} don't have name`,
+      ]);
+      deepEqual(mockFn.getCall(1).args, [`Warning: duplicate  subscript function name test`]);
+    });
   });
 });
