@@ -154,4 +154,29 @@ describe('test typescript fsa', () => {
     });
     assert.equal(failed.error, true);
   });
+
+  describe('test type', () => {
+    it('support support void', () => {
+      let actionCreator = actionCreatorFactory('test');
+      const action = actionCreator<void>('1');
+      action();
+      const asyncAction = actionCreator.async<void, number>('1');
+      asyncAction.started();
+      asyncAction.done({
+        result: 1,
+      });
+    });
+    it('support support union type', () => {
+      let actionCreator = actionCreatorFactory('test');
+      const action = actionCreator<1 | 2>('2');
+      action(1);
+      action(2);
+      const asyncAction = actionCreator.async<{ data: 1 } | { data: 2 }, number>('2');
+      asyncAction.started({ data: 1 });
+      asyncAction.done({
+        params: { data: 2 },
+        result: 1,
+      });
+    });
+  });
 });

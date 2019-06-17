@@ -41,13 +41,21 @@ export type ActionCreator<Payload> = {
   (payload: VoidToOptional<Payload>, meta?: Meta): Action<Payload>;
 };
 
-type OptionalParams<Params> = {
-  params: VoidToOptional<Params>;
-};
+type OptionalParams<Params> = Params extends void
+  ? {
+      params?: Params;
+    }
+  : {
+      params: Params;
+    };
 
-type OptionalResult<Result> = {
-  result: VoidToOptional<Result>;
-};
+type OptionalResult<Result> = Result extends void
+  ? {
+      result?: Result;
+    }
+  : {
+      result: Result;
+    };
 
 export type Success<Params, Result> = OptionalResult<Result> & OptionalParams<Params>;
 
