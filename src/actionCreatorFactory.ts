@@ -32,33 +32,22 @@ export function isType<Payload>(
   return action.type === actionCreator.type;
 }
 
+type VoidToOptional<P> = P extends void ? P | undefined : P;
+
 export type ActionCreator<Payload> = {
   type: string;
-  match: (action: AnyAction) => action is Action<Payload>;
   originType: string;
-} & (Payload extends void
-  ? {
-      (payload?: Payload, meta?: Meta): Action<Payload>;
-    }
-  : {
-      (payload: Payload, meta?: Meta): Action<Payload>;
-    });
+  match: (action: AnyAction) => action is Action<Payload>;
+  (payload: VoidToOptional<Payload>, meta?: Meta): Action<Payload>;
+};
 
-type OptionalParams<Params> = Params extends void
-  ? {
-      params?: Params;
-    }
-  : {
-      params: Params;
-    };
+type OptionalParams<Params> = {
+  params: VoidToOptional<Params>;
+};
 
-type OptionalResult<Result> = Result extends void
-  ? {
-      result?: Result;
-    }
-  : {
-      result: Result;
-    };
+type OptionalResult<Result> = {
+  result: VoidToOptional<Result>;
+};
 
 export type Success<Params, Result> = OptionalResult<Result> & OptionalParams<Params>;
 
