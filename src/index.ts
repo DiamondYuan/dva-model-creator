@@ -1,6 +1,6 @@
 import { call, put, select, take, cancel } from 'redux-saga/effects';
 import { Action, ActionCreator } from './actionCreatorFactory';
-import * as warning from 'warning';
+import warning from 'tiny-warning/dist/tiny-warning.esm';
 import { History } from 'history';
 import { Dispatch } from 'redux';
 
