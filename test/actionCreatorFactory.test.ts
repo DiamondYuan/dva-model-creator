@@ -178,5 +178,13 @@ describe('test typescript fsa', () => {
         result: 1,
       });
     });
+
+    it('support void error', () => {
+      let actionCreator = actionCreatorFactory('test');
+      const voidError = actionCreator.async<string, void, void>('test');
+      voidError.started('test');
+      voidError.done({ params: 'test' });
+      voidError.failed({ params: 'test' });
+    });
   });
 });

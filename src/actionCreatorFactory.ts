@@ -41,6 +41,14 @@ export type ActionCreator<Payload> = {
   (payload: VoidToOptional<Payload>, meta?: Meta): Action<Payload>;
 };
 
+type OptionalError<Error> = Error extends void
+  ? {
+      error?: Error;
+    }
+  : {
+      error: Error;
+    };
+
 type OptionalParams<Params> = Params extends void
   ? {
       params?: Params;
@@ -59,9 +67,7 @@ type OptionalResult<Result> = Result extends void
 
 export type Success<Params, Result> = OptionalResult<Result> & OptionalParams<Params>;
 
-export type Failure<Params, Error> = {
-  error: Error;
-} & OptionalParams<Params>;
+export type Failure<Params, Error> = OptionalError<Error> & OptionalParams<Params>;
 
 export interface AsyncActionCreators<Params, Result, Error = {}> {
   type: string;
