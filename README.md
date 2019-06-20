@@ -23,6 +23,20 @@ Write type strong dva model
 yarn add dva-model-creator
 ```
 
+Config app.ts to prevent namespacePrefixWarning.
+
+```javascript
+export const dva = {
+  config: {
+    namespacePrefixWarning: false,
+    onError(err: ErrorEvent) {
+      err.preventDefault();
+      console.error(err.message);
+    },
+  },
+};
+```
+
 ```typescript
 import { DvaModelBuilder, actionCreatorFactory } from 'dva-model-creator';
 
