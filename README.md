@@ -70,6 +70,33 @@ const model = new DvaModelBuilder<Counter>({ number: 0 })
 export default model;
 ```
 
+### immer
+
+immer 需要在 dva 或者 umi 中开启 immer. immer 和 case 无法同时使用。
+
+```typescript
+import { DvaModelBuilder, actionCreatorFactory } from 'dva-model-creator';
+
+const actionCreator = actionCreatorFactory('namespace');
+const add = actionCreator<number>('add');
+const minus = actionCreator<number>('minus');
+
+interface Counter {
+  number: number;
+}
+
+const model = new DvaModelBuilder<Counter>({ number: 0 })
+  .immer(add, (state, payload) => {
+    state.number += payload;
+  })
+  .immerWithAction(minus, (state, action) => {
+    state.number -= action.payload;
+  })
+  .build();
+
+export default model;
+```
+
 ## 招聘
 
 食亨团队始于 2017 年，总部位于上海，目前员工近 800 人。服务超过 300 个国内知名餐饮连锁品牌，近万家门店，覆盖 85 个城市。是国内领先的规模化、系统化运营的餐饮外卖运营公司。得到中国顶尖资本助力，获得了来自红杉资本中国及高榕资本领投的过亿元融资。
