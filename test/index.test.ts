@@ -3,7 +3,7 @@ import { DvaModelBuilder, actionCreatorFactory } from './../src/index';
 import { equal, deepEqual } from 'assert';
 import * as sinon from 'sinon';
 import { create } from 'dva-core';
-
+import * as dvaImmer from 'dva-immer';
 interface InitState {
   name: string;
   list: string[];
@@ -309,6 +309,40 @@ describe('test DvaModelBuilder', () => {
       deepEqual(mockFn.getCall(1).args, [
         `Warning: some subscriptions in model ${namespace} don't have name`,
       ]);
+    });
+
+    describe('test immer', () => {
+      const namespace = getRandomString();
+      const builder = new DvaModelBuilder({ count: 0 }, namespace);
+      const actionCreator = actionCreatorFactory(namespace);
+      const add = actionCreator<number>('add');
+      const minus = actionCreator<number>('minus');
+      builder.immer(add, (state, payload) => {
+        state.count += payload;
+      });
+      builder.immerWithAction(minus, (state, { payload }) => {
+        state.count -= payload;
+      });
+      const model = builder.build();
+      const app = create();
+      app.model(model);
+      app.use(dvaImmer());
+      app.start();
+      const oldState = (app as any)._store.getState()[namespace];
+
+      it('immer should work correct', () => {
+        (app as any)._store.dispatch(add(10));
+        deepEqual((app as any)._store.getState()[namespace], { count: 10 });
+      });
+
+      it('old state should not change', () => {
+        deepEqual(oldState, { count: 0 });
+      });
+
+      it('immerWithAction should work correct', () => {
+        (app as any)._store.dispatch(minus(5));
+        deepEqual((app as any)._store.getState()[namespace], { count: 5 });
+      });
     });
   });
 });

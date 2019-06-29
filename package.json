@@ -25,6 +25,7 @@
     "@typescript-eslint/parser": "^1.9.0",
     "babel-eslint": "^10.0.1",
     "dva-core": "^1.4.0",
+    "dva-immer": "^0.4.7",
     "egg-bin": "^4.13.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.3.0",

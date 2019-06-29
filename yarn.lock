@@ -2001,6 +2001,14 @@ dva-core@^1.4.0:
     redux-saga "^0.16.0"
     warning "^3.0.0"
 
+dva-immer@^0.4.7:
+  version "0.4.7"
+  resolved "https://registry.npmjs.org/dva-immer/-/dva-immer-0.4.7.tgz#7fdf5c9e1d4721af01ebe0ccdc305b0ca21c22c6"
+  integrity sha512-e6HuAIFtDwooc7g9yGYiPJbcUiyA6xEZNjt1jNVgLmK+nXnJcLgP2AC0XcbXjt0rOKu6Smn6TwWr1+5hW5HNXA==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    immer "^2.1.1"
+
 eastasianwidth@^0.2.0:
   version "0.2.0"
   resolved "https://registry.npmjs.org/eastasianwidth/-/eastasianwidth-0.2.0.tgz#696ce2ec0aa0e6ea93a397ffcf24aa7840c827cb"
@@ -3034,6 +3042,11 @@ ignore@^4.0.3, ignore@^4.0.6:
   version "4.0.6"
   resolved "https://registry.npmjs.org/ignore/-/ignore-4.0.6.tgz#750e3db5862087b4737ebac8207ffd1ef27b25fc"
   integrity sha512-cyFDKrqc/YdcWFniJhzI42+AzS+gNwmUzOSFcRCQYwySuBBBy/KjuxWLZ/FHEH6Moq1NizMOBWyTcv8O4OZIMg==
+
+immer@^2.1.1:
+  version "2.1.5"
+  resolved "https://registry.npmjs.org/immer/-/immer-2.1.5.tgz#0389947455c5a2c7a47f1e6f415c9d1a62a1ebed"
+  integrity sha512-xyjQyTBYIeiz6jd02Hg12jV+9QISwF1crLcwTlzHpWH4e0ryNWj1kacpTwimK3bJV5NKKXw458G2vpqoB/inFA==
 
 import-fresh@^3.0.0:
   version "3.0.0"
