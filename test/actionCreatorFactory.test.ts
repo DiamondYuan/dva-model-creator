@@ -1,5 +1,5 @@
 /* eslint-disable no-undefined */
-import actionCreatorFactory, { isType } from '../src/actionCreatorFactory';
+import actionCreatorFactory, { isType, removeActionNamespace } from '../src/actionCreatorFactory';
 import * as assert from 'assert';
 
 describe('test actionCreatorFactory', () => {
@@ -186,5 +186,20 @@ describe('test typescript fsa', () => {
       voidError.done({ params: 'test' });
       voidError.failed({ params: 'test' });
     });
+  });
+
+  describe('test removeActionNamespace', () => {
+    assert.deepEqual(
+      removeActionNamespace({
+        type: 'name',
+      }),
+      { type: 'name' }
+    );
+    assert.deepEqual(
+      removeActionNamespace({
+        type: 'namespace/name',
+      }),
+      { type: 'name' }
+    );
   });
 });

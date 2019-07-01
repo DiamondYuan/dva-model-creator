@@ -159,4 +159,13 @@ export function actionCreatorFactory(
   return Object.assign(actionCreator, { async: asyncActionCreators });
 }
 
+export function removeActionNamespace(action: AnyAction) {
+  let finalType: string = action.type;
+  if (finalType.includes('/')) {
+    finalType = finalType.split('/')[1];
+  }
+  action.type = finalType;
+  return action;
+}
+
 export default actionCreatorFactory;
