@@ -17,6 +17,12 @@ Write type strong dva model
 
 配合 Umi Pro 食用更佳 [`umijs/vscode-extension-umi-pro`](https://github.com/umijs/vscode-extension-umi-pro)。
 
+### 优点
+
+- 为所有 action 定义类型
+- 测试覆盖率 100%，可以放心使用。
+- 100% 兼容现有 dva 项目，可以和原有的 dva/umi 项目混合使用。
+
 ### how to use
 
 ```bash
