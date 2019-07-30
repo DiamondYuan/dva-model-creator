@@ -13,17 +13,15 @@
 
 > Inspired by [`aikoven/typescript-fsa`](https://github.com/aikoven/typescript-fsa) and [`dphilipson/typescript-fsa-reducers`](https://github.com/dphilipson/typescript-fsa-reducers)
 
-Write type strong dva model
+If develop JavaScript project,you can use [`umijs/vscode-extension-umi-pro`](https://github.com/umijs/vscode-extension-umi-pro)。
 
-配合 Umi Pro 食用更佳 [`umijs/vscode-extension-umi-pro`](https://github.com/umijs/vscode-extension-umi-pro)。
+### Advantage
 
-### 优点
+- Test coverage 100%, production available.
+- Type strong action without any.
+- 100% compatible with existing dva projects, can be mixed with the original dva/umi project.
 
-- 为所有 action 定义类型
-- 测试覆盖率 100%，可以放心使用。
-- 100% 兼容现有 dva 项目，可以和原有的 dva/umi 项目混合使用。
-
-### how to use
+### How to use
 
 ```bash
 yarn add dva-model-creator
@@ -76,9 +74,9 @@ const model = new DvaModelBuilder<Counter>({ number: 0 })
 export default model;
 ```
 
-### immer
+### Immer
 
-immer 需要在 dva 或者 umi 中开启 immer. immer 和 case 无法同时使用。
+`immer` and `case` cannot be used at the same time, and you should open immer manually.
 
 ```typescript
 import { DvaModelBuilder, actionCreatorFactory } from 'dva-model-creator';
