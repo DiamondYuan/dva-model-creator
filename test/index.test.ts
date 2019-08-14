@@ -27,6 +27,8 @@ function getRandomString() {
     .slice(-10)}`;
 }
 
+const delay = timeout => new Promise(resolve => setTimeout(resolve, timeout));
+
 describe('test DvaModelBuilder', () => {
   it('should get correct namespace', () => {
     const namespace = getRandomString();
@@ -195,7 +197,7 @@ describe('test DvaModelBuilder', () => {
     const actionCreator = actionCreatorFactory(namespace);
     const add = actionCreator<number>('add');
     const addWatcher = actionCreator<number>('addWatcher');
-    const delay = timeout => new Promise(resolve => setTimeout(resolve, timeout));
+
     const model = new DvaModelBuilder(0, namespace)
       .case(add, (state, payload) => {
         return state + payload || 1;
@@ -217,6 +219,37 @@ describe('test DvaModelBuilder', () => {
       (app as any)._store.dispatch(addWatcher(3));
       await delay(300);
       equal(app._store.getState()[namespace], 2);
+    });
+  });
+
+  describe('test poll and pollWithAction', () => {
+    const namespace = getRandomString();
+    const actionCreator = actionCreatorFactory(namespace);
+    const add = actionCreator<number>('add');
+    const pollSomeApi = actionCreator.poll<number>('poll-some-api');
+
+    const model = new DvaModelBuilder(0, namespace)
+      .case(add, (state, payload) => {
+        return state + payload || 1;
+      })
+      .poll<number>(
+        pollSomeApi.init,
+        function*(payload, { put }) {
+          yield put(add(payload));
+        },
+        100
+      )
+      .build();
+
+    it('should get correct state', async () => {
+      const app = create();
+      app.model(model);
+      app.start();
+      (app as any)._store.dispatch(pollSomeApi.start(1));
+      await delay(200);
+      (app as any)._store.dispatch(pollSomeApi.stop());
+      await delay(200);
+      equal(app._store.getState()[namespace], 3);
     });
   });
 

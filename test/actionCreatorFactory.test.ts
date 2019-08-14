@@ -155,6 +155,32 @@ describe('test typescript fsa', () => {
     assert.equal(failed.error, true);
   });
 
+  it('poll', () => {
+    const actionCreator = actionCreatorFactory('prefix');
+    const pollActions = actionCreator.poll<{ foo: string }>('poll-some-api', { baz: 'baz' });
+
+    assert.equal(pollActions.type, 'prefix/poll-some-api');
+    assert.equal(pollActions.init.type, 'prefix/poll-some-api');
+    assert.equal(pollActions.start.type, 'prefix/poll-some-api-start');
+    assert.equal(pollActions.stop.type, 'prefix/poll-some-api-stop');
+
+    const pollInit = pollActions.init();
+    assert.equal(pollInit.type, 'prefix/poll-some-api');
+    assert.deepEqual(pollInit.meta, { baz: 'baz' });
+    assert.equal(!pollInit.error, true);
+
+    const pollStart = pollActions.start({ foo: 'foo' });
+    assert.equal(pollStart.type, 'prefix/poll-some-api-start');
+    assert.deepEqual(pollStart.payload, { foo: 'foo' });
+    assert.deepEqual(pollStart.meta, { baz: 'baz' });
+    assert.equal(!pollStart.error, true);
+
+    const pollStop = pollActions.stop();
+    assert.equal(pollStop, 'prefix/poll-some-api-stop');
+    assert.deepEqual(pollStop.meta, { baz: 'baz' });
+    assert.equal(!pollStop.error, true);
+  });
+
   describe('test type', () => {
     it('support support void', () => {
       let actionCreator = actionCreatorFactory('test');

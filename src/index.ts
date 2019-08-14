@@ -135,6 +135,23 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
     return this.setEffects(actionCreator, [handler, { type: 'watcher' }]);
   };
 
+  poll = <P>(actionCreator: ActionCreator<void>, handler: EffectsHandler<P>, delay: number) => {
+    return this.setEffects(actionCreator, [
+      function*({ payload }, effects) {
+        yield handler(payload, effects);
+      },
+      { type: 'poll', delay },
+    ]);
+  };
+
+  pollWithAction = <P>(
+    actionCreator: ActionCreator<P>,
+    handler: EffectsHandlerWithAction<P>,
+    delay: number
+  ) => {
+    return this.setEffects(actionCreator, [handler, { type: 'poll', delay }]);
+  };
+
   subscript = (func: Subscription) => {
     let funcName = func.name;
 
@@ -154,6 +171,12 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
     this.model.effects[actionCreator.originType] = data;
     return this;
   };
+
+  // private setEffectsWithType = <P>(type: string, data: any) => {
+  //   this.checkType(actionCreator.type);
+  //   this.model.effects[actionCreator.originType] = data;
+  //   return this;
+  // };
 
   private checkType(type: string) {
     const { namespace } = this.model;
