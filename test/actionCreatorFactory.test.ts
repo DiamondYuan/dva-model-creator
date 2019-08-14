@@ -160,14 +160,8 @@ describe('test typescript fsa', () => {
     const pollActions = actionCreator.poll<{ foo: string }>('poll-some-api', { baz: 'baz' });
 
     assert.equal(pollActions.type, 'prefix/poll-some-api');
-    assert.equal(pollActions.init.type, 'prefix/poll-some-api');
     assert.equal(pollActions.start.type, 'prefix/poll-some-api-start');
     assert.equal(pollActions.stop.type, 'prefix/poll-some-api-stop');
-
-    const pollInit = pollActions.init();
-    assert.equal(pollInit.type, 'prefix/poll-some-api');
-    assert.deepEqual(pollInit.meta, { baz: 'baz' });
-    assert.equal(!pollInit.error, true);
 
     const pollStart = pollActions.start({ foo: 'foo' });
     assert.equal(pollStart.type, 'prefix/poll-some-api-start');

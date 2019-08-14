@@ -232,8 +232,8 @@ describe('test DvaModelBuilder', () => {
       .case(add, (state, payload) => {
         return state + payload || 1;
       })
-      .poll<number>(
-        pollSomeApi.init,
+      .poll(
+        pollSomeApi,
         function*(payload, { put }) {
           yield put(add(payload));
         },

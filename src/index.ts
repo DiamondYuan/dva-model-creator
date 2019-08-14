@@ -1,5 +1,5 @@
 import { call, put, select, take, cancel } from 'redux-saga/effects';
-import { Action, ActionCreator } from './actionCreatorFactory';
+import { Action, ActionCreator, PollActionCreator } from './actionCreatorFactory';
 import * as warning from 'warning';
 import { History } from 'history';
 import { Dispatch } from 'redux';
@@ -135,21 +135,17 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
     return this.setEffects(actionCreator, [handler, { type: 'watcher' }]);
   };
 
-  poll = <P>(actionCreator: ActionCreator<void>, handler: EffectsHandler<P>, delay: number) => {
-    return this.setEffects(actionCreator, [
+  poll = <P>(
+    pollActionCreator: PollActionCreator<P>,
+    handler: EffectsHandler<P>,
+    delay: number
+  ) => {
+    return this.setEffectsWithPollActionCreator(pollActionCreator, [
       function*({ payload }, effects) {
         yield handler(payload, effects);
       },
       { type: 'poll', delay },
     ]);
-  };
-
-  pollWithAction = <P>(
-    actionCreator: ActionCreator<P>,
-    handler: EffectsHandlerWithAction<P>,
-    delay: number
-  ) => {
-    return this.setEffects(actionCreator, [handler, { type: 'poll', delay }]);
   };
 
   subscript = (func: Subscription) => {
@@ -172,11 +168,14 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
     return this;
   };
 
-  // private setEffectsWithType = <P>(type: string, data: any) => {
-  //   this.checkType(actionCreator.type);
-  //   this.model.effects[actionCreator.originType] = data;
-  //   return this;
-  // };
+  private setEffectsWithPollActionCreator = <P>(
+    pollActionCreator: PollActionCreator<P>,
+    data: any
+  ) => {
+    this.checkType(pollActionCreator.type);
+    this.model.effects[pollActionCreator.originType] = data;
+    return this;
+  };
 
   private checkType(type: string) {
     const { namespace } = this.model;

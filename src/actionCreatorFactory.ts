@@ -78,7 +78,7 @@ export interface AsyncActionCreators<Params, Result, Error = {}> {
 
 export interface PollActionCreator<Params> {
   type: string;
-  init: ActionCreator<void>;
+  originType: string;
   start: ActionCreator<Params>;
   stop: ActionCreator<void>;
 }
@@ -168,7 +168,7 @@ export function actionCreatorFactory(
   function pollActionCreators<Params>(type: string, commonMeta?: Meta): PollActionCreator<Params> {
     return {
       type: base + type,
-      init: actionCreator(type, commonMeta, false),
+      originType: type,
       start: actionCreator<Params>(`${type}-start`, commonMeta, false),
       stop: actionCreator(`${type}-stop`, commonMeta, false),
     };
