@@ -24,7 +24,7 @@
     "@typescript-eslint/eslint-plugin": "^1.12.0",
     "@typescript-eslint/parser": "^1.12.0",
     "babel-eslint": "^10.0.2",
-    "dva-core": "^1.4.0",
+    "dva-core": "^1.6.0-beta.6",
     "dva-immer": "^0.4.7",
     "egg-bin": "^4.13.0",
     "eslint": "^6.0.1",
