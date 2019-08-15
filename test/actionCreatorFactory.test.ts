@@ -170,7 +170,7 @@ describe('test typescript fsa', () => {
     assert.equal(!pollStart.error, true);
 
     const pollStop = pollActions.stop();
-    assert.equal(pollStop, 'prefix/poll-some-api-stop');
+    assert.equal(pollStop.type, 'prefix/poll-some-api-stop');
     assert.deepEqual(pollStop.meta, { baz: 'baz' });
     assert.equal(!pollStop.error, true);
   });
