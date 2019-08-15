@@ -1,4 +1,5 @@
 /* eslint-disable max-nested-callbacks */
+import '@babel/polyfill';
 import { DvaModelBuilder, actionCreatorFactory } from './../src/index';
 import { equal, deepEqual } from 'assert';
 import * as sinon from 'sinon';
@@ -222,7 +223,7 @@ describe('test DvaModelBuilder', () => {
     });
   });
 
-  describe('test poll and pollWithAction', () => {
+  describe('test poll', () => {
     const namespace = getRandomString();
     const actionCreator = actionCreatorFactory(namespace);
     const add = actionCreator<number>('add');
@@ -246,10 +247,18 @@ describe('test DvaModelBuilder', () => {
       app.model(model);
       app.start();
       (app as any)._store.dispatch(pollSomeApi.start(1));
-      await delay(200);
       (app as any)._store.dispatch(pollSomeApi.stop());
-      await delay(200);
-      equal(app._store.getState()[namespace], 3);
+      equal(app._store.getState()[namespace], 1);
+    });
+    it('should get correct state', async () => {
+      const app = create();
+      app.model(model);
+      app.start();
+      (app as any)._store.dispatch(pollSomeApi.start(1));
+      await delay(350);
+      (app as any)._store.dispatch(pollSomeApi.stop());
+      await delay(100);
+      equal(app._store.getState()[namespace], 4);
     });
   });
 
