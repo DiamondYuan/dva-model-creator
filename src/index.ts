@@ -1,4 +1,4 @@
-import { call, put, select, take, cancel } from 'redux-saga/effects';
+import { call, put, select, take, cancel, all, race } from 'redux-saga/effects';
 import { Action, ActionCreator, PollActionCreator } from './actionCreatorFactory';
 import * as warning from 'warning';
 import { History } from 'history';
@@ -35,6 +35,8 @@ export interface EffectsCommandMap {
   select: typeof select;
   take: typeof take;
   cancel: typeof cancel;
+  all: typeof all;
+  race: typeof race;
 }
 
 export type EffectsHandler<P> = (payload: P, effects: EffectsCommandMap) => IterableIterator<any>;
