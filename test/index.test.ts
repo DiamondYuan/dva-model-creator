@@ -19,7 +19,7 @@ function dispatchOnce(model: any, action: any) {
   const app = create();
   app.model(model);
   app.start();
-  (app as any)._store.dispatch(action);
+  return (app as any)._store.dispatch(action);
 }
 
 function getRandomString() {
@@ -74,10 +74,14 @@ describe('test DvaModelBuilder', () => {
     const actionCreator = actionCreatorFactory(namespace);
     const action1 = actionCreator<string>('action1');
     const action2 = actionCreator<string>('action2');
+    const testGetEffectsResult = actionCreator('testGetEffectsResult');
     let callback = sinon.fake();
     const model = new DvaModelBuilder(state, namespace)
       .takeEvery(action1, function*(payload) {
         yield callback(payload);
+      })
+      .takeEvery(testGetEffectsResult, function*(_, { select }) {
+        return yield select(() => true);
       })
       .takeEveryWithAction(action2, function*({ type, payload }) {
         yield callback({
@@ -105,6 +109,11 @@ describe('test DvaModelBuilder', () => {
       const { type, payload } = callback.getCall(1).args[0];
       deepEqual({ type, payload }, { type: `${namespace}/action2`, payload: data });
     });
+
+    it('should get effects result correct', async () => {
+      const dispatchResult = await dispatchOnce(model, testGetEffectsResult);
+      equal(true, dispatchResult);
+    });
   });
 
   describe('test takeLatest and takeLatestWithAction', () => {
@@ -112,8 +121,12 @@ describe('test DvaModelBuilder', () => {
     const actionCreator = actionCreatorFactory(namespace);
     const action1 = actionCreator<string>('action1');
     const action2 = actionCreator<string>('action2');
+    const testGetEffectsResult = actionCreator('testGetEffectsResult');
     let callback = sinon.fake();
     const model = new DvaModelBuilder(state, namespace)
+      .takeLatest(testGetEffectsResult, function*(_, { select }) {
+        return yield select(() => true);
+      })
       .takeLatest(action1, function*(payload) {
         yield callback(payload);
       })
@@ -144,6 +157,11 @@ describe('test DvaModelBuilder', () => {
       equal(callback.callCount, 2);
       deepEqual(callback.getCall(1).args[0], { type: `${namespace}/action2`, payload: data });
     });
+
+    it('should get effects result correct', async () => {
+      const dispatchResult = await dispatchOnce(model, testGetEffectsResult);
+      equal(true, dispatchResult);
+    });
   });
 
   describe('test throttle and throttleWithAction', () => {
@@ -151,8 +169,17 @@ describe('test DvaModelBuilder', () => {
     const actionCreator = actionCreatorFactory(namespace);
     const action1 = actionCreator<string>('action1');
     const action2 = actionCreator<string>('action2');
+    const testGetEffectsResult = actionCreator('testGetEffectsResult');
+
     let callback = sinon.fake();
     const model = new DvaModelBuilder(state, namespace)
+      .throttle(
+        testGetEffectsResult,
+        function*(_, { select }) {
+          return yield select(() => true);
+        },
+        10
+      )
       .throttle(
         action1,
         function*(payload) {
@@ -190,6 +217,11 @@ describe('test DvaModelBuilder', () => {
       dispatchOnce(model, action2(data));
       equal(callback.callCount, 2);
       deepEqual(callback.getCall(1).args[0], { type: `${namespace}/action2`, payload: data });
+    });
+
+    it('should get effects result correct', async () => {
+      const dispatchResult = await dispatchOnce(model, testGetEffectsResult);
+      equal(true, dispatchResult);
     });
   });
 
