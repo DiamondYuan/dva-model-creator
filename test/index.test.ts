@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 import '@babel/polyfill';
-import { DvaModelBuilder, actionCreatorFactory } from './../src/index';
+import { DvaModelBuilder, actionCreatorFactory, Action } from './../src/index';
 import { equal, deepEqual } from 'assert';
 import * as sinon from 'sinon';
 import { create } from 'dva-core';
@@ -237,7 +237,7 @@ describe('test DvaModelBuilder', () => {
       })
       .watcher(addWatcher, function*({ take, put, call }) {
         while (true) {
-          const { payload } = yield take(addWatcher);
+          const { payload }: Action<number> = yield take(addWatcher);
           yield call(delay, 100);
           yield put(add(payload));
         }
