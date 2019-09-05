@@ -39,14 +39,11 @@ export interface EffectsCommandMap {
   race: typeof race;
 }
 
-export type EffectsHandler<P> = (payload: P, effects: EffectsCommandMap) => IterableIterator<any>;
+export type EffectsHandler<P> = (payload: P, effects: EffectsCommandMap) => any;
 
-export type EffectsHandlerWithAction<P> = (
-  payload: Action<P>,
-  effects: EffectsCommandMap
-) => IterableIterator<any>;
+export type EffectsHandlerWithAction<P> = (payload: Action<P>, effects: EffectsCommandMap) => any;
 
-export type EffectsWatcher = (effects: EffectsCommandMap) => IterableIterator<any>;
+export type EffectsWatcher = (effects: EffectsCommandMap) => any;
 
 export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   private model: Model<OutS>;
