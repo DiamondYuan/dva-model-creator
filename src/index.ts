@@ -1,6 +1,6 @@
 import { call, put, select, take, cancel, all, race } from 'redux-saga/effects';
 import { Action, ActionCreator, PollActionCreator } from './actionCreatorFactory';
-import * as warning from 'warning';
+import warning from 'warning';
 import { History } from 'history';
 import { Dispatch } from 'redux';
 

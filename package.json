@@ -4,20 +4,27 @@
   "repository": "git@github.com:DiamondYuan/dva-model-creator.git",
   "author": "DiamondYuan <admin@diamondyuan.com>",
   "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "unpkg": "dist/index.umd.js",
+  "jsdelivr": "dist/index.umd.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "cov": "egg-bin cov",
     "lint": "eslint --ext .js,.ts .",
-    "build": "tsc",
-    "prepublish": "npm run build"
+    "build": "rm -rf dist && pansy",
+    "prepublishOnly": "npm run build"
   },
-  "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
-  "files": [
-    "lib"
-  ],
+  "dependencies": {
+    "warning": "^4.0.3"
+  },
   "devDependencies": {
     "@babel/polyfill": "^7.4.4",
     "@diamondyuan/eslint-config-typescript": "^6.0.0",
+    "@pansy/cli": "^0.1.6",
     "@types/mocha": "^5.2.6",
     "@types/node": "^12.0.2",
     "@types/sinon": "^7.0.11",
@@ -40,8 +47,5 @@
   },
   "egg": {
     "typescript": true
-  },
-  "dependencies": {
-    "warning": "^4.0.3"
   }
 }
