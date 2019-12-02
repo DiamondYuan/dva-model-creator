@@ -1,9 +1,10 @@
 /* eslint-disable max-nested-callbacks */
-import { DvaModelBuilder, actionCreatorFactory } from './../src/index';
+import '@babel/polyfill';
+import { DvaModelBuilder, actionCreatorFactory, Action } from './../src/index';
 import { equal, deepEqual } from 'assert';
 import * as sinon from 'sinon';
 import { create } from 'dva-core';
-
+import * as dvaImmer from 'dva-immer';
 interface InitState {
   name: string;
   list: string[];
@@ -18,7 +19,7 @@ function dispatchOnce(model: any, action: any) {
   const app = create();
   app.model(model);
   app.start();
-  (app as any)._store.dispatch(action);
+  return (app as any)._store.dispatch(action);
 }
 
 function getRandomString() {
@@ -26,6 +27,8 @@ function getRandomString() {
     .toString()
     .slice(-10)}`;
 }
+
+const delay = timeout => new Promise(resolve => setTimeout(resolve, timeout));
 
 describe('test DvaModelBuilder', () => {
   it('should get correct namespace', () => {
@@ -71,10 +74,14 @@ describe('test DvaModelBuilder', () => {
     const actionCreator = actionCreatorFactory(namespace);
     const action1 = actionCreator<string>('action1');
     const action2 = actionCreator<string>('action2');
+    const testGetEffectsResult = actionCreator('testGetEffectsResult');
     let callback = sinon.fake();
     const model = new DvaModelBuilder(state, namespace)
       .takeEvery(action1, function*(payload) {
         yield callback(payload);
+      })
+      .takeEvery(testGetEffectsResult, function*(_, { select }) {
+        return yield select(() => true);
       })
       .takeEveryWithAction(action2, function*({ type, payload }) {
         yield callback({
@@ -102,6 +109,11 @@ describe('test DvaModelBuilder', () => {
       const { type, payload } = callback.getCall(1).args[0];
       deepEqual({ type, payload }, { type: `${namespace}/action2`, payload: data });
     });
+
+    it('should get effects result correct', async () => {
+      const dispatchResult = await dispatchOnce(model, testGetEffectsResult);
+      equal(true, dispatchResult);
+    });
   });
 
   describe('test takeLatest and takeLatestWithAction', () => {
@@ -109,8 +121,12 @@ describe('test DvaModelBuilder', () => {
     const actionCreator = actionCreatorFactory(namespace);
     const action1 = actionCreator<string>('action1');
     const action2 = actionCreator<string>('action2');
+    const testGetEffectsResult = actionCreator('testGetEffectsResult');
     let callback = sinon.fake();
     const model = new DvaModelBuilder(state, namespace)
+      .takeLatest(testGetEffectsResult, function*(_, { select }) {
+        return yield select(() => true);
+      })
       .takeLatest(action1, function*(payload) {
         yield callback(payload);
       })
@@ -141,6 +157,11 @@ describe('test DvaModelBuilder', () => {
       equal(callback.callCount, 2);
       deepEqual(callback.getCall(1).args[0], { type: `${namespace}/action2`, payload: data });
     });
+
+    it('should get effects result correct', async () => {
+      const dispatchResult = await dispatchOnce(model, testGetEffectsResult);
+      equal(true, dispatchResult);
+    });
   });
 
   describe('test throttle and throttleWithAction', () => {
@@ -148,8 +169,17 @@ describe('test DvaModelBuilder', () => {
     const actionCreator = actionCreatorFactory(namespace);
     const action1 = actionCreator<string>('action1');
     const action2 = actionCreator<string>('action2');
+    const testGetEffectsResult = actionCreator('testGetEffectsResult');
+
     let callback = sinon.fake();
     const model = new DvaModelBuilder(state, namespace)
+      .throttle(
+        testGetEffectsResult,
+        function*(_, { select }) {
+          return yield select(() => true);
+        },
+        10
+      )
       .throttle(
         action1,
         function*(payload) {
@@ -188,6 +218,11 @@ describe('test DvaModelBuilder', () => {
       equal(callback.callCount, 2);
       deepEqual(callback.getCall(1).args[0], { type: `${namespace}/action2`, payload: data });
     });
+
+    it('should get effects result correct', async () => {
+      const dispatchResult = await dispatchOnce(model, testGetEffectsResult);
+      equal(true, dispatchResult);
+    });
   });
 
   describe('test watcher and watcherWithAction', async () => {
@@ -195,14 +230,14 @@ describe('test DvaModelBuilder', () => {
     const actionCreator = actionCreatorFactory(namespace);
     const add = actionCreator<number>('add');
     const addWatcher = actionCreator<number>('addWatcher');
-    const delay = timeout => new Promise(resolve => setTimeout(resolve, timeout));
+
     const model = new DvaModelBuilder(0, namespace)
       .case(add, (state, payload) => {
         return state + payload || 1;
       })
       .watcher(addWatcher, function*({ take, put, call }) {
         while (true) {
-          const { payload } = yield take(addWatcher);
+          const { payload }: Action<number> = yield take(addWatcher);
           yield call(delay, 100);
           yield put(add(payload));
         }
@@ -217,6 +252,45 @@ describe('test DvaModelBuilder', () => {
       (app as any)._store.dispatch(addWatcher(3));
       await delay(300);
       equal(app._store.getState()[namespace], 2);
+    });
+  });
+
+  describe('test poll', () => {
+    const namespace = getRandomString();
+    const actionCreator = actionCreatorFactory(namespace);
+    const add = actionCreator<number>('add');
+    const pollSomeApi = actionCreator.poll<number>('poll-some-api');
+
+    const model = new DvaModelBuilder(0, namespace)
+      .case(add, (state, payload) => {
+        return state + payload || 1;
+      })
+      .poll(
+        pollSomeApi,
+        function*(payload, { put }) {
+          yield put(add(payload));
+        },
+        100
+      )
+      .build();
+
+    it('should get correct state', async () => {
+      const app = create();
+      app.model(model);
+      app.start();
+      (app as any)._store.dispatch(pollSomeApi.start(1));
+      (app as any)._store.dispatch(pollSomeApi.stop());
+      equal(app._store.getState()[namespace], 1);
+    });
+    it('should get correct state', async () => {
+      const app = create();
+      app.model(model);
+      app.start();
+      (app as any)._store.dispatch(pollSomeApi.start(1));
+      await delay(350);
+      (app as any)._store.dispatch(pollSomeApi.stop());
+      await delay(100);
+      equal(app._store.getState()[namespace], 4);
     });
   });
 
@@ -309,6 +383,40 @@ describe('test DvaModelBuilder', () => {
       deepEqual(mockFn.getCall(1).args, [
         `Warning: some subscriptions in model ${namespace} don't have name`,
       ]);
+    });
+
+    describe('test immer', () => {
+      const namespace = getRandomString();
+      const builder = new DvaModelBuilder({ count: 0 }, namespace);
+      const actionCreator = actionCreatorFactory(namespace);
+      const add = actionCreator<number>('add');
+      const minus = actionCreator<number>('minus');
+      builder.immer(add, (state, payload) => {
+        state.count += payload;
+      });
+      builder.immerWithAction(minus, (state, { payload }) => {
+        state.count -= payload;
+      });
+      const model = builder.build();
+      const app = create();
+      app.model(model);
+      app.use(dvaImmer());
+      app.start();
+      const oldState = (app as any)._store.getState()[namespace];
+
+      it('immer should work correct', () => {
+        (app as any)._store.dispatch(add(10));
+        deepEqual((app as any)._store.getState()[namespace], { count: 10 });
+      });
+
+      it('old state should not change', () => {
+        deepEqual(oldState, { count: 0 });
+      });
+
+      it('immerWithAction should work correct', () => {
+        (app as any)._store.dispatch(minus(5));
+        deepEqual((app as any)._store.getState()[namespace], { count: 5 });
+      });
     });
   });
 });

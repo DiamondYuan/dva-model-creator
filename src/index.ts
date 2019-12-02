@@ -1,6 +1,6 @@
-import { call, put, select, take, cancel } from 'redux-saga/effects';
-import { Action, ActionCreator } from './actionCreatorFactory';
-import warning from 'tiny-warning/dist/tiny-warning.esm';
+import { call, put, select, take, cancel, all, race } from 'redux-saga/effects';
+import { Action, ActionCreator, PollActionCreator } from './actionCreatorFactory';
+import * as warning from 'warning';
 import { History } from 'history';
 import { Dispatch } from 'redux';
 
@@ -19,6 +19,8 @@ export interface SubscriptionsMapObject {
 
 export type Handler<InS extends OutS, OutS, P> = (state: InS, payload: P) => OutS;
 
+export type ImmerHandler<InS, P> = (state: InS, payload: P) => void;
+
 interface Model<T> {
   namespace: string;
   state?: T;
@@ -33,16 +35,15 @@ export interface EffectsCommandMap {
   select: typeof select;
   take: typeof take;
   cancel: typeof cancel;
+  all: typeof all;
+  race: typeof race;
 }
 
-export type EffectsHandler<P> = (payload: P, effects: EffectsCommandMap) => IterableIterator<any>;
+export type EffectsHandler<P> = (payload: P, effects: EffectsCommandMap) => any;
 
-export type EffectsHandlerWithAction<P> = (
-  payload: Action<P>,
-  effects: EffectsCommandMap
-) => IterableIterator<any>;
+export type EffectsHandlerWithAction<P> = (payload: Action<P>, effects: EffectsCommandMap) => any;
 
-export type EffectsWatcher = (effects: EffectsCommandMap) => IterableIterator<any>;
+export type EffectsWatcher = (effects: EffectsCommandMap) => any;
 
 export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   private model: Model<OutS>;
@@ -56,6 +57,19 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
       subscriptions: {},
     };
   }
+
+  immer = <P>(actionCreator: ActionCreator<P>, handler: ImmerHandler<InS, P>) => {
+    this.checkType(actionCreator.type);
+    this.model.reducers[actionCreator.originType] = (state, action) =>
+      handler(state, action.payload);
+    return this;
+  };
+
+  immerWithAction = <P>(actionCreator: ActionCreator<P>, handler: ImmerHandler<InS, Action<P>>) => {
+    this.checkType(actionCreator.type);
+    this.model.reducers[actionCreator.originType] = handler;
+    return this;
+  };
 
   case = <P>(actionCreator: ActionCreator<P>, handler: Handler<InS, OutS, P>) => {
     this.checkType(actionCreator.type);
@@ -72,7 +86,7 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
 
   takeEvery = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
     return this.setEffects(actionCreator, function*({ payload }, effects) {
-      yield handler(payload, effects);
+      return yield handler(payload, effects);
     });
   };
 
@@ -86,7 +100,7 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   takeLatest = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>) => {
     return this.setEffects(actionCreator, [
       function*({ payload }, effects) {
-        yield handler(payload, effects);
+        return yield handler(payload, effects);
       },
       { type: 'takeLatest' },
     ]);
@@ -102,7 +116,7 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   throttle = <P>(actionCreator: ActionCreator<P>, handler: EffectsHandler<P>, ms?: number) => {
     return this.setEffects(actionCreator, [
       function*({ payload }, effects) {
-        yield handler(payload, effects);
+        return yield handler(payload, effects);
       },
       { type: 'throttle', ms },
     ]);
@@ -118,6 +132,19 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
 
   watcher = <P>(actionCreator: ActionCreator<P>, handler: EffectsWatcher) => {
     return this.setEffects(actionCreator, [handler, { type: 'watcher' }]);
+  };
+
+  poll = <P>(
+    pollActionCreator: PollActionCreator<P>,
+    handler: EffectsHandler<P>,
+    delay: number
+  ) => {
+    return this.setEffectsWithPollActionCreator(pollActionCreator, [
+      function*({ payload }, effects) {
+        return yield handler(payload, effects);
+      },
+      { type: 'poll', delay },
+    ]);
   };
 
   subscript = (func: Subscription) => {
@@ -137,6 +164,15 @@ export class DvaModelBuilder<InS extends OutS, OutS = InS> {
   private setEffects = <P>(actionCreator: ActionCreator<P>, data: any) => {
     this.checkType(actionCreator.type);
     this.model.effects[actionCreator.originType] = data;
+    return this;
+  };
+
+  private setEffectsWithPollActionCreator = <P>(
+    pollActionCreator: PollActionCreator<P>,
+    data: any
+  ) => {
+    this.checkType(pollActionCreator.type);
+    this.model.effects[pollActionCreator.originType] = data;
     return this;
   };
 

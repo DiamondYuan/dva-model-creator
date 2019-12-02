@@ -13,14 +13,32 @@
 
 > Inspired by [`aikoven/typescript-fsa`](https://github.com/aikoven/typescript-fsa) and [`dphilipson/typescript-fsa-reducers`](https://github.com/dphilipson/typescript-fsa-reducers)
 
-Write type strong dva model
+If develop JavaScript project,you can use [`umijs/vscode-extension-umi-pro`](https://github.com/umijs/vscode-extension-umi-pro)。
 
-配合 Umi Pro 食用更佳 [`umijs/vscode-extension-umi-pro`](https://github.com/umijs/vscode-extension-umi-pro)。
+### Advantage
 
-### how to use
+- Test coverage 100%, production available.
+- Type strong action without any.
+- 100% compatible with existing dva projects, can be mixed with the original dva/umi project.
+
+### How to use
 
 ```bash
 yarn add dva-model-creator
+```
+
+Config app.ts to prevent namespacePrefixWarning.
+
+```javascript
+export const dva = {
+  config: {
+    namespacePrefixWarning: false,
+    onError(err: ErrorEvent) {
+      err.preventDefault();
+      console.error(err.message);
+    },
+  },
+};
 ```
 
 ```typescript
@@ -50,6 +68,33 @@ const model = new DvaModelBuilder<Counter>({ number: 0 })
   .takeEvery(asyncAdd, function*(payload, { call, put }) {
     yield call(delay, 100);
     yield put(add(payload));
+  })
+  .build();
+
+export default model;
+```
+
+### Immer
+
+`immer` and `case` cannot be used at the same time, and you should open immer manually.
+
+```typescript
+import { DvaModelBuilder, actionCreatorFactory } from 'dva-model-creator';
+
+const actionCreator = actionCreatorFactory('namespace');
+const add = actionCreator<number>('add');
+const minus = actionCreator<number>('minus');
+
+interface Counter {
+  number: number;
+}
+
+const model = new DvaModelBuilder<Counter>({ number: 0 })
+  .immer(add, (state, payload) => {
+    state.number += payload;
+  })
+  .immerWithAction(minus, (state, action) => {
+    state.number -= action.payload;
   })
   .build();
 

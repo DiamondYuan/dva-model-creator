@@ -76,6 +76,13 @@ export interface AsyncActionCreators<Params, Result, Error = {}> {
   failed: ActionCreator<Failure<Params, Error>>;
 }
 
+export interface PollActionCreator<Params> {
+  type: string;
+  originType: string;
+  start: ActionCreator<Params>;
+  stop: ActionCreator<void>;
+}
+
 export interface ActionCreatorFactory {
   <Payload = void>(type: string, commonMeta?: Meta, isError?: boolean): ActionCreator<Payload>;
 
@@ -89,6 +96,8 @@ export interface ActionCreatorFactory {
     type: string,
     commonMeta?: Meta
   ): AsyncActionCreators<Params, Result, Error>;
+
+  poll<Params>(type: string, commonMeta?: Meta): PollActionCreator<Params>;
 }
 
 declare const process: {
@@ -156,7 +165,25 @@ export function actionCreatorFactory(
     };
   }
 
-  return Object.assign(actionCreator, { async: asyncActionCreators });
+  function pollActionCreators<Params>(type: string, commonMeta?: Meta): PollActionCreator<Params> {
+    return {
+      type: base + type,
+      originType: type,
+      start: actionCreator<Params>(`${type}-start`, commonMeta, false),
+      stop: actionCreator(`${type}-stop`, commonMeta, false),
+    };
+  }
+
+  return Object.assign(actionCreator, { async: asyncActionCreators, poll: pollActionCreators });
+}
+
+export function removeActionNamespace(action: AnyAction) {
+  let finalType: string = action.type;
+  if (finalType.includes('/')) {
+    finalType = finalType.split('/')[1];
+  }
+  action.type = finalType;
+  return action;
 }
 
 export default actionCreatorFactory;
